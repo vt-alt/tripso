@@ -220,9 +220,6 @@ static int write_cipso(uint8_t *data, uint16_t len, uint8_t level, uint64_t cate
 	uint8_t cat[8];
 	int i, catlen = -1;
 
-	/* dummy label is stripped */
-	if (!level && !categories)
-		return 0;
 	categories = cpu_to_le64(categories);
 	for (i = 0; i < sizeof(cat); i++) {
 		if ((cat[i] = bitrev8(((uint8_t *)(&categories))[i])))
@@ -250,8 +247,6 @@ static int write_astra(uint8_t *data, uint16_t len, uint8_t level, uint64_t cate
 	uint8_t par[11]; /* to fit 72 by 7 bits */
 	int i;
 
-	if (!level && !categories)
-		return 0;
 	categories = cpu_to_le64(categories);
 	for (i = 0; i < sizeof(par); i++) {
 		uint8_t b = (level & 0x7f) << 1;
@@ -266,7 +261,7 @@ static int write_astra(uint8_t *data, uint16_t len, uint8_t level, uint64_t cate
 		par[i] = b;
 	}
 
-	if (i < 1 || ASTRA_OPT_LEN + i > len)
+	if (ASTRA_OPT_LEN + i > len)
 		return -ENOMEM;
 	data[0] = IPOPT_SEC;
 	data[1] = ASTRA_OPT_LEN + i;
