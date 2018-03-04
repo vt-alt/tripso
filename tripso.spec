@@ -24,23 +24,21 @@ Translate between CISPO and Astra Linux security labels (source).
 
 %prep
 %setup -q
-tar -cjf ../%name-%version.tar.bz2 ../%name-%version
 
 %build
 make libxt_TRIPSO.so VERSION=%version
 
 %install
 make install-lib DESTDIR=%buildroot
-mkdir -p %kernel_srcdir
-install -pDm0644 ../%name-%version.tar.bz2 %kernel_srcdir/kernel-source-%name-%version.tar.bz2
+install -pDm0644 %_sourcedir/%name-%version.tar %kernel_srcdir/kernel-source-%name-%version.tar
 
 %files -n kernel-source-%name
-%attr(0644,root,root) %kernel_src/kernel-source-%name-%version.tar.bz2
+%attr(0644,root,root) %kernel_src/kernel-source-%name-%version.tar
 
 %files
 %doc README.md
 /%_lib/iptables/*.so
 
 %changelog
-* Sat Mar 03 2018 Vitaly Chikunov <vt@altlinux.ru> 1.0-alt1
+* Sat Mar 04 2018 Vitaly Chikunov <vt@altlinux.ru> 1.0-alt1
 - Sisyphus package.
