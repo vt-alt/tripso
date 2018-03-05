@@ -28,7 +28,7 @@ install-lib: libxt_TRIPSO.so
 	install -D $< $(DESTDIR)$(shell pkg-config --variable xtlibdir xtables)/$<
 
 %.so: %_sh.o
-	gcc -shared -o $@ $<
+	gcc -shared -o $@ $< $(shell pkg-config xtables --libs)
 
 %_sh.o: libxt_TRIPSO.c xt_TRIPSO.h
 	gcc -O2 -Wall -Wunused -fPIC ${XFLAGS} ${CFLAGS} -o $@ -c $<
