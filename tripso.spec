@@ -5,6 +5,7 @@ Release: alt1
 Summary: Translation of IPv4 Security Options (IPSO) Labels
 License: GPLv2
 Group: System/Kernel and hardware
+Requires: iptables
 
 Url: https://github.com/vt-alt/tripso
 Source0: %name-%version.tar
@@ -40,5 +41,5 @@ install -pDm0644 %_sourcedir/%name-%version.tar %kernel_srcdir/kernel-source-%na
 /%_lib/iptables/*.so
 
 %changelog
-* Sat Mar 04 2018 Vitaly Chikunov <vt@altlinux.ru> 1.0-alt1
+* Tue Mar 06 2018 Vitaly Chikunov <vt@altlinux.ru> 1.0-alt1
 - Sisyphus package.
