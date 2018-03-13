@@ -1,6 +1,6 @@
 Name: tripso
 Version: 1.0
-Release: alt1
+Release: alt0.M80C.1
 
 Summary: Translation of IPv4 Security Options (IPSO) Labels
 License: GPLv2
@@ -41,5 +41,8 @@ install -pDm0644 %_sourcedir/%name-%version.tar %kernel_srcdir/kernel-source-%na
 /%_lib/iptables/*.so
 
 %changelog
+* Tue Mar 13 2018 Anton V. Boyarshinov <boyarsh@altlinux.org> 1.0-alt0.M80C.1
+- backport to c8
+
 * Tue Mar 06 2018 Vitaly Chikunov <vt@altlinux.ru> 1.0-alt1
 - Sisyphus package.
