@@ -7,6 +7,7 @@ KVER	?= $(shell uname -r)
 KDIR	?= /lib/modules/$(KVER)/build/
 DEPMOD	= /sbin/depmod -a
 CC	?= gcc
+CFLAGS	?= -O2 -g
 XFLAGS	?= $(shell pkg-config xtables --cflags 2>/dev/null)
 XDIR	?= $(shell pkg-config --variable xtlibdir xtables)
 VERSION	= $(shell git -C $M describe --dirty)
@@ -31,7 +32,7 @@ install-lib: libxt_TRIPSO.so
 	gcc -shared -o $@ $< $(shell pkg-config xtables --libs)
 
 %_sh.o: libxt_TRIPSO.c xt_TRIPSO.h
-	gcc -O2 -Wall -Wunused -fPIC ${XFLAGS} ${CFLAGS} -o $@ -c $<
+	gcc -Wall -Wunused -fPIC $(XFLAGS) $(CFLAGS) -o $@ -c $<
 
 clean:
 	-make -C $(KDIR) M=$(CURDIR) clean
