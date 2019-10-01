@@ -11,6 +11,7 @@ Url: https://github.com/vt-alt/tripso
 Source0: %name-%version.tar
 
 BuildPreReq: rpm-build-kernel
+BuildPreReq: kernel-headers-modules-std-def
 BuildRequires: libiptables-devel
 
 %description
@@ -32,6 +33,10 @@ make libxt_TRIPSO.so VERSION=%version CFLAGS="%optflags"
 %install
 make install-lib DESTDIR=%buildroot
 install -pDm0644 %_sourcedir/%name-%version.tar %kernel_srcdir/kernel-source-%name-%version.tar
+
+%check
+# do dummy build of the module
+make KDIR=$(echo /lib/modules/*/build) VERSION=%version xt_TRIPSO.ko
 
 %files -n kernel-source-%name
 %attr(0644,root,root) %kernel_src/kernel-source-%name-%version.tar
