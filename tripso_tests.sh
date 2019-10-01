@@ -20,7 +20,7 @@ show_dmesg() {
 
 check_harness() {
 	if ! tcpdump -D | grep -qw nflog; then
-		echo "tcpdump shoudl support nflog interface."
+		echo "tcpdump should support nflog interface."
 		exit 1
 	fi
 }
@@ -62,7 +62,7 @@ load_module() {
 	fi
 	# check if correct module is loaded
 	if ! modinfo ./xt_TRIPSO.ko | grep -qw $(cat /sys/module/xt_TRIPSO/srcversion); then
-		echo "Incorect version of module is loaded."
+		echo "Incorrect version of module is loaded."
 		exit 1
 	fi
 }
