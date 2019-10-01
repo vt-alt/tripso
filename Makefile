@@ -7,7 +7,9 @@ KVER	?= $(shell uname -r)
 KDIR	?= /lib/modules/$(KVER)/build/
 DEPMOD	= /sbin/depmod -a
 CC	?= gcc
+ifeq ($(KERNELRELEASE),)
 CFLAGS	?= -O2 -g
+endif
 XFLAGS	?= $(shell pkg-config xtables --cflags 2>/dev/null)
 XDIR	?= $(shell pkg-config --variable xtlibdir xtables)
 VERSION	= $(shell git -C $M describe --dirty)
