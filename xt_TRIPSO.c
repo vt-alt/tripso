@@ -12,12 +12,12 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <asm/unaligned.h>
-#include <linux/ip.h>
 #include <net/ip.h>
 #include <net/icmp.h>
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/bitrev.h>
+#include <linux/kernel.h>
 #include <linux/netfilter/x_tables.h>
 #include <net/cipso_ipv4.h>
 #include "xt_TRIPSO.h"
@@ -378,9 +378,21 @@ tripso_tg(struct sk_buff *skb, const struct xt_action_param *par)
 		}
 		opt_len = data[IPOPT_OLEN];
 
+		if ((debug > 1) && ((data[IPOPT_OPTVAL] == IPOPT_SEC)
+			|| (data[IPOPT_OPTVAL] == IPOPT_CIPSO))) {
+			pr_devel("-----------------------------------------------------");
+			pr_devel("%pI4 -> %pI4\n", &iph->saddr, &iph->daddr);
+		} else if (debug > 1) {
+			pr_devel("tripso called");
+		}
+
 		/* invalid option length */
-		if (opt_len < 2 || opt_len > len)
+		if (opt_len < 2 || opt_len > len) {
+			if (debug > 1) {
+				pr_devel("invalid option length: %d not in 2-%d, dropped.", opt_len, len);
+			}
 			return NF_DROP;
+		}
 
 		if (data[IPOPT_OPTVAL] == IPOPT_SEC &&
 		    info->tr_mode == TRIPSO_CIPSO) {
@@ -389,8 +401,8 @@ tripso_tg(struct sk_buff *skb, const struct xt_action_param *par)
 				goto pproblem;
 			if (debug > 1)
 				pr_devel("option astra %#x[%x]<%d> %*ph\n",
-				    data[IPOPT_OPTVAL], data[IPOPT_OLEN],
-				    info->tr_mode, len, data);
+					data[IPOPT_OPTVAL], data[IPOPT_OLEN],
+					info->tr_mode, len, data);
 			sec_err = !parse_rfc1108_astra(data, len, &level, &categories);
 			if (sec_err)
 				goto pproblem;
@@ -426,8 +438,17 @@ tripso_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	}
 
 	if (sec_err == -1)
+	{
+		if ((debug > 1) && ((data[IPOPT_OPTVAL] == IPOPT_SEC)
+			&& (info->tr_mode == TRIPSO_CIPSO))) {
+			pr_devel("packet passed: %p %d", &data[IPOPT_OPTVAL], IPOPT_SEC);
+		}
 		return XT_CONTINUE;
+	}
 	/* otherwise, packet with known security option */
+	else if (debug > 1) {
+		pr_devel("packet passed: known security");
+	}
 
 	/* complete options to 32-bit word */
 	switch (ti & 3) {
@@ -439,15 +460,34 @@ tripso_tg(struct sk_buff *skb, const struct xt_action_param *par)
 		topt[ti++] = IPOPT_END;
 	}
 
-	/* will rewrite whole options set */
-	if (!skb_ensure_writable(skb, ip_hdrlen(skb)) ||
-	    !mangle_options(skb, topt, ti))
+	int res = skb_ensure_writable(skb, ip_hdrlen(skb));
+	if (unlikely(res > 0)) {
+		if (debug > 1) {
+			pr_devel("socket buffer not writable");
+		}
 		return NF_DROP;
+	}
+	/* will rewrite whole options set */
+	res = mangle_options(skb, topt, ti);
+	if (unlikely(res <= 0))
+	{
+		if (debug > 1) {
+			pr_devel("mangle unsuccessful");
+		}
+		return NF_DROP;
+	}
 
 	return XT_CONTINUE;
 
 pproblem:
-	send_parameter_problem(skb, data - (uint8_t *)iph);
+	{
+		const uint8_t ptr = data - (uint8_t *)iph;
+
+		if (debug > 1) {
+			pr_devel("parameter problem: %u", ptr);
+		}
+		send_parameter_problem(skb, ptr);
+	}
 	return NF_DROP;
 }
 
