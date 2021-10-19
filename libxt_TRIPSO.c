@@ -1,8 +1,8 @@
 /*
  * xtables helper library for netfilter module which translates between CIPSO
- * and RFC 1108 (Astra) security labels.
+ * and GOST R 58256-2018 (RFC 1108 Astra) security labels.
  *
- * Copyright (C) 2018 vt@altlinux.org
+ * Copyright (C) 2018-2021 vt@altlinux.org
  *
  *
  * This program is free software; you can redistribute it and/or modify

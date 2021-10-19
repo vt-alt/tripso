@@ -15,14 +15,14 @@ BuildRequires: libiptables-devel
 %{?!_without_check:%{?!_disable_check:BuildRequires: rpm-build-vm kernel-headers-un-def iptables iproute2 net-tools tcpdump tcpreplay kernel-headers-modules-un-def}}
 
 %description
-Translate between CISPO and Astra Linux security labels (userspace part).
+Translate between CISPO and GOST R 58256-2018 security labels (userspace part).
 
 %package -n kernel-source-%name
-Summary: Translate between CISPO and Astra Linux security labels (source)
+Summary: Translate between CISPO and GOST R 58256-2018 security labels (source)
 Group: Development/Kernel
 BuildArch: noarch
 %description -n kernel-source-%name
-Translate between CISPO and Astra Linux security labels (source).
+Translate between CISPO and GOST R 58256-2018 security labels (source).
 
 %prep
 %setup -q
