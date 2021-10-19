@@ -440,7 +440,7 @@ tripso_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	}
 
 	/* will rewrite whole options set */
-	if (!skb_ensure_writable(skb, ip_hdrlen(skb)) ||
+	if (skb_ensure_writable(skb, ip_hdrlen(skb)) ||
 	    !mangle_options(skb, topt, ti))
 		return NF_DROP;
 
