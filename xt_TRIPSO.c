@@ -433,8 +433,10 @@ tripso_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	switch (ti & 3) {
 	case 1:
 		topt[ti++] = IPOPT_END;
+		fallthrough;
 	case 2:
 		topt[ti++] = IPOPT_END;
+		fallthrough;
 	case 3:
 		topt[ti++] = IPOPT_END;
 	}
