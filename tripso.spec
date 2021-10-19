@@ -11,8 +11,8 @@ Url: https://github.com/vt-alt/tripso
 Source0: %name-%version.tar
 
 BuildPreReq: rpm-build-kernel
-BuildPreReq: kernel-headers-modules-std-def
 BuildRequires: libiptables-devel
+%{?!_without_check:%{?!_disable_check:BuildRequires: rpm-build-vm kernel-headers-un-def iptables iproute2 net-tools tcpdump tcpreplay kernel-headers-modules-un-def}}
 
 %description
 Translate between CISPO and Astra Linux security labels (userspace part).
@@ -37,6 +37,14 @@ install -pDm0644 %_sourcedir/%name-%version.tar %kernel_srcdir/kernel-source-%na
 %check
 # do dummy build of the module
 make KDIR=$(echo /lib/modules/*/build) VERSION=%version xt_TRIPSO.ko
+timeout 60 \
+vm-run --kvm=cond --sbin '
+	set -e
+	modprobe -a iptable_filter iptable_raw iptable_security ip_tables
+	mount -t tmpfs run /var/run
+	export XTABLES_LIBDIR=$PWD:/%_lib/iptables
+	./tripso_tests.sh retest
+'
 
 %files -n kernel-source-%name
 %attr(0644,root,root) %kernel_src/kernel-source-%name-%version.tar
